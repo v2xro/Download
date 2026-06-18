@@ -1,357 +1,542 @@
-
-<html lang="fa" dir="rtl">
+<html lang="fa">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>پخش کننده ویدیو</title>
-    <link href="https://fonts.googleapis.com/css2?family=Lalezar&family=Vazirmatn:wght@400;700;900&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            background-color: #000;
-            overflow: hidden;
-            height: 100vh;
-            width: 100vw;
-            font-family: 'Vazirmatn', sans-serif;
-        }
-        
-        .video-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            transition: opacity 1.5s ease;
-        }
-        
-        video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            background-color: #000;
-        }
-        
-        .controls {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: rgba(0, 0, 0, 0.8);
-            transition: all 0.8s ease;
-            z-index: 2;
-        }
-        
-        .play-button {
-            width: 140px;
-            height: 140px;
-            background: linear-gradient(135deg, #ff0080, #ff8c00);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.4s ease;
-            box-shadow: 0 0 60px rgba(255, 0, 128, 0.5);
-            border: 5px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .play-button:hover {
-            transform: scale(1.15);
-            box-shadow: 0 0 80px rgba(255, 0, 128, 0.8);
-        }
-        
-        .play-button i {
-            font-size: 60px;
-            color: white;
-            margin-left: 10px;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-        }
-        
-        .controls.fade-out {
-            opacity: 0;
-            visibility: hidden;
-        }
-        
-        /* استایل برای متن نمایشی پس از اتمام ویدیو */
-        .text-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(45deg, #000000, #1a0000, #330000);
-            z-index: 3;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 1.5s ease;
-        }
-        
-        .text-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-        
-        .main-text {
-            font-family: 'Lalezar', cursive;
-            font-size: 22vw;
-            color: transparent;
-            background: linear-gradient(90deg, #ff0000, #ff6600, #ff0000);
-            -webkit-background-clip: text;
-            background-clip: text;
-            text-shadow: 0 0 30px rgba(255, 0, 0, 0.7);
-            letter-spacing: 5px;
-            text-align: center;
-            animation: textGlow 3s infinite alternate;
-        }
-        
-        @keyframes textGlow {
-            0% {
-                text-shadow: 0 0 20px rgba(255, 0, 0, 0.7);
-                transform: scale(1);
-            }
-            100% {
-                text-shadow: 0 0 50px rgba(255, 0, 0, 1), 0 0 80px rgba(255, 102, 0, 0.8);
-                transform: scale(1.05);
-            }
-        }
-        
-        /* استایل برای متن سازنده */
-        .creator-text {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            color: rgba(255, 255, 255, 0.4);
-            font-size: 14px;
-            font-family: 'Vazirmatn', sans-serif;
-            z-index: 4;
-            direction: rtl;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-        }
-        
-        /* انیمیشن پالس برای دکمه پلی */
-        @keyframes pulse {
-            0% { 
-                box-shadow: 0 0 40px rgba(255, 0, 128, 0.5); 
-                transform: scale(1);
-            }
-            50% { 
-                box-shadow: 0 0 80px rgba(255, 0, 128, 0.8); 
-                transform: scale(1.05);
-            }
-            100% { 
-                box-shadow: 0 0 40px rgba(255, 0, 128, 0.5); 
-                transform: scale(1);
-            }
-        }
-        
-        .play-button {
-            animation: pulse 2.5s infinite;
-        }
-        
-        /* افکت برای زمانی که ویدیو محو می‌شود */
-        .video-container.fade-out {
-            opacity: 0;
-        }
-        
-        /* حالت تمام صفحه */
-        :fullscreen .creator-text {
-            font-size: 16px;
-            bottom: 25px;
-            right: 25px;
-        }
-        
-        :-webkit-full-screen .creator-text {
-            font-size: 16px;
-            bottom: 25px;
-            right: 25px;
-        }
-        
-        :-moz-full-screen .creator-text {
-            font-size: 16px;
-            bottom: 25px;
-            right: 25px;
-        }
-        
-        /* استایل برای موبایل */
-        @media (max-width: 768px) {
-            .play-button {
-                width: 120px;
-                height: 120px;
-            }
-            
-            .play-button i {
-                font-size: 50px;
-            }
-            
-            .main-text {
-                font-size: 25vw;
-            }
-            
-            .creator-text {
-                font-size: 12px;
-                bottom: 15px;
-                right: 15px;
-            }
-        }
-    </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>مرورگر ایکسرو</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+    }
+
+    html, body {
+      overflow: hidden;
+      height: 100%;
+      width: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background: #050505;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* ===== صفحه اصلی (پنهان، هرگز نمایش داده نمی‌شود) ===== */
+    #mainPage {
+      position: fixed;
+      inset: 0;
+      z-index: -999;
+      opacity: 0;
+      pointer-events: none;
+      visibility: hidden;
+      background: transparent;
+      /* این صفحه هرگز دیده نمی‌شود */
+    }
+
+    /* ===== پنجره لایه‌ای تمام صفحه ===== */
+    #overlayWindow {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #050505;
+      /* این پنجره هرگز بسته نمی‌شود */
+    }
+
+    /* GIF پس‌زمینه داخل پنجره لایه‌ای */
+    .bg-gif {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+      opacity: 0.85;
+    }
+
+    /* کادر شیشه‌ای */
+    .card {
+      position: relative;
+      z-index: 1;
+      background: rgba(0, 0, 0, 0.25);
+      backdrop-filter: blur(12px) saturate(1.2);
+      -webkit-backdrop-filter: blur(12px) saturate(1.2);
+      width: 340px;
+      max-width: 88vw;
+      padding: 1.6rem 1.4rem 1.4rem;
+      border-radius: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+      text-align: center;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: 41px;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 50%, rgba(255,255,255,0.01) 100%);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    /* هدر */
+    .app-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 1.4rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      width: 100%;
+    }
+
+    .app-emoji {
+      font-size: 2rem;
+      line-height: 1;
+      filter: drop-shadow(0 0 20px rgba(120, 80, 255, 0.08));
+      animation: floatEmoji 4s ease-in-out infinite;
+    }
+
+    @keyframes floatEmoji {
+      0%, 100% { transform: translateY(0px) scale(1); }
+      50% { transform: translateY(-4px) scale(1.04); }
+    }
+
+    .app-name {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+      background: linear-gradient(135deg, #f0f0f0 0%, #c8b8e8 40%, #a0b8e8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .app-name-sub {
+      font-size: 0.6rem;
+      font-weight: 300;
+      -webkit-text-fill-color: rgba(180, 180, 200, 0.25);
+      background: none;
+      margin-right: 3px;
+      letter-spacing: 0.3px;
+    }
+
+    /* اطلاعات */
+    .info-grid {
+      background: rgba(255, 255, 255, 0.015);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border-radius: 24px;
+      padding: 1.2rem 1rem;
+      margin-bottom: 1.6rem;
+      border: 1px solid rgba(255, 255, 255, 0.025);
+      box-shadow: inset 0 2px 12px rgba(0, 0, 0, 0.2);
+      width: 100%;
+    }
+
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.4rem 0.1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.015);
+      width: 100%;
+    }
+
+    .info-item:last-child {
+      border-bottom: none;
+    }
+
+    .info-label {
+      color: rgba(200, 200, 220, 0.35);
+      font-weight: 400;
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .info-label::before {
+      content: "◆";
+      color: rgba(255, 255, 255, 0.03);
+      font-size: 0.35rem;
+    }
+
+    .info-value {
+      background: rgba(255, 255, 255, 0.015);
+      padding: 0.15rem 0.8rem;
+      border-radius: 30px;
+      font-size: 0.7rem;
+      font-weight: 400;
+      color: rgba(232, 232, 240, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.02);
+      box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.2);
+      letter-spacing: 0.05px;
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+      white-space: nowrap;
+    }
+
+    .info-value.today {
+      background: rgba(140, 100, 220, 0.04);
+      border-color: rgba(140, 100, 220, 0.04);
+      color: rgba(212, 200, 240, 0.8);
+    }
+
+    .info-value.today::after {
+      content: " ●";
+      color: rgba(140, 100, 220, 0.12);
+      font-size: 0.4rem;
+    }
+
+    /* دکمه */
+    .action-btn {
+      background: rgba(255, 255, 255, 0.02);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      border-radius: 80px;
+      padding: 0.7rem 1.4rem;
+      width: 100%;
+      color: rgba(234, 234, 245, 0.7);
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 
+        0 4px 0 rgba(0,0,0,0.2),
+        0 6px 20px rgba(0, 0, 0, 0.3);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.6rem;
+      letter-spacing: 0.2px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .action-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 80px;
+      background: linear-gradient(135deg, rgba(140, 100, 220, 0.02), transparent 50%, rgba(80, 120, 220, 0.015));
+      pointer-events: none;
+    }
+
+    .action-btn:hover {
+      background: rgba(255, 255, 255, 0.035);
+      border-color: rgba(255, 255, 255, 0.05);
+      transform: scale(1.01);
+      box-shadow: 
+        0 4px 0 rgba(0,0,0,0.2),
+        0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .action-btn:active {
+      transform: scale(0.95);
+      box-shadow: 0 2px 0 rgba(0,0,0,0.2);
+    }
+
+    .btn-icon {
+      font-size: 0.9rem;
+      opacity: 0.3;
+      transition: 0.3s;
+    }
+
+    .action-btn:hover .btn-icon {
+      opacity: 0.5;
+    }
+
+    .btn-text {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .btn-text .sep {
+      display: inline-block;
+      width: 3px;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 50%;
+      margin: 0 3px;
+    }
+
+    .btn-text .update-label {
+      font-weight: 500;
+      color: rgba(232, 232, 245, 0.7);
+    }
+
+    .btn-text .download-label {
+      font-weight: 300;
+      color: rgba(200, 200, 220, 0.3);
+    }
+
+    /* پیام */
+    .toast-message {
+      margin-top: 1rem;
+      font-size: 0.7rem;
+      background: rgba(255, 255, 255, 0.01);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      padding: 0.4rem 1.2rem;
+      border-radius: 40px;
+      color: rgba(180, 180, 200, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.01);
+      display: inline-block;
+      transition: 0.3s ease;
+      min-width: 120px;
+      font-weight: 300;
+      letter-spacing: 0.3px;
+    }
+
+    .toast-message.active {
+      color: rgba(184, 176, 216, 0.5);
+      border-color: rgba(140, 100, 220, 0.04);
+      background: rgba(140, 100, 220, 0.015);
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        width: 300px;
+        padding: 1.2rem 1rem 1rem;
+        border-radius: 32px;
+      }
+      .app-name {
+        font-size: 1.2rem;
+      }
+      .app-emoji {
+        font-size: 1.6rem;
+      }
+      .info-item {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 2px;
+        padding: 0.3rem 0;
+      }
+      .info-value {
+        font-size: 0.6rem;
+        padding: 0.1rem 0.6rem;
+        white-space: normal;
+      }
+      .action-btn {
+        font-size: 0.75rem;
+        padding: 0.6rem 1rem;
+        gap: 0.3rem;
+      }
+      .btn-text .sep {
+        margin: 0 2px;
+      }
+      .bg-gif {
+        opacity: 0.7;
+      }
+    }
+
+    img, div, span, button {
+      -webkit-user-drag: none;
+      user-drag: none;
+    }
+
+    /* جلوگیری از بسته شدن پنجره با کلیک روی دکمه یا هر جای دیگر */
+    #overlayWindow {
+      pointer-events: auto;
+    }
+    /* ولی اجازه تعامل با دکمه رو می‌دهیم */
+    .action-btn {
+      pointer-events: auto;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-    <!-- ویدیو -->
-    <div class="video-container" id="videoContainer">
-        <video id="musicVideo" preload="auto">
-            <source src="https://uploadkon.ir/uploads/17cf09_25074mhrdad-14040918-164334925.mp4" type="video/mp4">
-        </video>
-    </div>
-    
-    <!-- متن نمایشی پس از اتمام ویدیو -->
-    <div class="text-overlay" id="textOverlay">
-        <div class="main-text" id="mainText">کس ننت</div>
-    </div>
-    
-    <!-- کنترل‌های پخش -->
-    <div class="controls" id="videoControls">
-        <div class="play-button" id="playButton">
-            <i class="fas fa-play"></i>
-        </div>
-    </div>
-    
-    <!-- متن سازنده -->
-    <div class="creator-text">سازنده سید</div>
 
-    <script>
-        // دریافت المان‌های مورد نیاز
-        const video = document.getElementById('musicVideo');
-        const playButton = document.getElementById('playButton');
-        const videoControls = document.getElementById('videoControls');
-        const videoContainer = document.getElementById('videoContainer');
-        const textOverlay = document.getElementById('textOverlay');
-        const mainText = document.getElementById('mainText');
-        const body = document.body;
-        
-        // حالت تمام صفحه به صورت خودکار
-        function enterFullscreen() {
-            if (!document.fullscreenElement) {
-                if (document.documentElement.requestFullscreen) {
-                    document.documentElement.requestFullscreen();
-                } else if (document.documentElement.mozRequestFullScreen) {
-                    document.documentElement.mozRequestFullScreen();
-                } else if (document.documentElement.webkitRequestFullscreen) {
-                    document.documentElement.webkitRequestFullscreen();
-                } else if (document.documentElement.msRequestFullscreen) {
-                    document.documentElement.msRequestFullscreen();
-                }
-            }
+<!-- ===== صفحه اصلی (هرگز نمایش داده نمی‌شود) ===== -->
+<div id="mainPage">
+  <!-- این صفحه کاملاً خالی و پنهان است -->
+</div>
+
+<!-- ===== پنجره لایه‌ای تمام صفحه ===== -->
+<div id="overlayWindow">
+
+  <!-- GIF پس‌زمینه -->
+  <img class="bg-gif" src="https://disup.ir/uploads/bf28f975fc101.gif" alt="background" loading="lazy">
+
+  <!-- کادر شیشه‌ای -->
+  <div class="card">
+
+    <div class="app-header">
+      <span class="app-emoji">👾</span>
+      <span class="app-name">
+        <span class="app-name-sub">مرورگر</span>ایکسرو
+      </span>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-item">
+        <span class="info-label">آخرین آپدیت</span>
+        <span class="info-value today" id="fullDate">امروز · ۲۸</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">سیستم‌عامل</span>
+        <span class="info-value">اندروید ۷ به بالا</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">بیس</span>
+        <span class="info-value">«۲۱۳۸»</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">نسخه</span>
+        <span class="info-value">xro_7.1.5.9</span>
+      </div>
+    </div>
+
+    <button class="action-btn" id="updateDownloadBtn">
+      <span class="btn-icon">↻</span>
+      <span class="btn-text">
+        <span class="update-label">به‌روزرسانی</span>
+        <span class="sep"></span>
+        <span class="download-label">دانلود</span>
+      </span>
+      <span class="btn-icon" style="font-size:0.8rem;">⬇</span>
+    </button>
+
+    <div id="statusMessage" class="toast-message">● آماده</div>
+  </div>
+
+</div>
+
+<script>
+  (function() {
+    // ===== جلوگیری از کلیک راست =====
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+      return false;
+    });
+
+    document.addEventListener('selectstart', function(e) {
+      e.preventDefault();
+      return false;
+    });
+
+    document.addEventListener('dragstart', function(e) {
+      e.preventDefault();
+      return false;
+    });
+
+    // ===== تنظیم تاریخ کامل =====
+    function setFullDate() {
+      const dateEl = document.getElementById('fullDate');
+      if (!dateEl) return;
+      
+      const now = new Date();
+      const day = now.getDate();
+      const monthNames = ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 
+                         'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'];
+      const month = monthNames[now.getMonth()];
+      const year = now.getFullYear();
+      const persianYear = year - 622;
+      dateEl.textContent = `${day} ${month} ${persianYear}`;
+    }
+
+    setFullDate();
+
+    // ===== دکمه و پیام =====
+    const btn = document.getElementById('updateDownloadBtn');
+    const msg = document.getElementById('statusMessage');
+
+    function setUpdated() {
+      msg.textContent = '✓ شما به‌روز هستید';
+      msg.classList.add('active');
+    }
+
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation(); // جلوگیری از بسته شدن (در صورت وجود)
+      setUpdated();
+      this.style.transition = 'transform 0.07s';
+      this.style.transform = 'scale(0.94)';
+      setTimeout(() => {
+        this.style.transform = 'scale(1)';
+      }, 120);
+    });
+
+    msg.textContent = '● آماده';
+
+    // ===== جلوگیری از zoom با کیبورد =====
+    document.addEventListener('keydown', function(e) {
+      if (e.ctrlKey && (e.key === '+' || e.key === '-' || e.key === '=' || e.key === '0')) {
+        e.preventDefault();
+        return false;
+      }
+    });
+
+    // ===== جلوگیری از zoom با دو انگشت =====
+    let lastTouchDistance = 0;
+    document.addEventListener('touchstart', function(e) {
+      if (e.touches.length === 2) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        lastTouchDistance = Math.sqrt(dx*dx + dy*dy);
+      }
+    }, { passive: true });
+
+    document.addEventListener('touchmove', function(e) {
+      if (e.touches.length === 2) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (Math.abs(dist - lastTouchDistance) > 5) {
+          e.preventDefault();
+          return false;
         }
-        
-        // ورود به حالت تمام صفحه پس از کلیک روی دکمه پلی
-        playButton.addEventListener('click', function() {
-            // ورود به حالت تمام صفحه
-            enterFullscreen();
-            
-            // پخش ویدیو
-            video.play();
-            
-            // اضافه کردن کلاس fade-out برای محو کردن کنترل‌ها
-            videoControls.classList.add('fade-out');
-            
-            // بعد از کامل شدن افکت محو، کنترل‌ها را مخفی می‌کنیم
-            setTimeout(() => {
-                videoControls.style.display = 'none';
-            }, 800);
-        });
-        
-        // رویداد پایان ویدیو
-        video.addEventListener('ended', function() {
-            // محو کردن ویدیو
-            videoContainer.classList.add('fade-out');
-            
-            // بعد از کامل شدن افکت محو، نمایش متن
-            setTimeout(() => {
-                textOverlay.classList.add('active');
-                
-                // پخش مجدد ویدیو پس از 5 ثانیه نمایش متن
-                setTimeout(() => {
-                    textOverlay.classList.remove('active');
-                    videoContainer.classList.remove('fade-out');
-                    video.currentTime = 0;
-                    video.play();
-                }, 5000); // نمایش متن به مدت 5 ثانیه
-            }, 1500); // تأخیر 1.5 ثانیه قبل از نمایش متن
-        });
-        
-        // کلیک روی صفحه - ویدیو متوقف نمی‌شود، فقط اگر متوقف بود ادامه می‌یابد
-        body.addEventListener('click', function(e) {
-            // اگر روی دکمه پلی کلیک شده، کاری نکن (رویداد خود دکمه پلی رسیدگی می‌کند)
-            if (e.target.closest('#playButton')) return;
-            
-            // اگر ویدیو متوقف شده، آن را ادامه بده
-            if (video.paused) {
-                video.play();
-            }
-            // اگر ویدیو در حال پخش است، هیچ کاری نکن (متوقف نشود)
-        });
-        
-        // تغییر آیکون دکمه پلی وقتی ویدیو در حال پخش است
-        video.addEventListener('play', function() {
-            playButton.innerHTML = '<i class="fas fa-pause"></i>';
-        });
-        
-        // تغییر آیکون دکمه پلی وقتی ویدیو مکث می‌شود
-        video.addEventListener('pause', function() {
-            playButton.innerHTML = '<i class="fas fa-play"></i>';
-        });
-        
-        // تلاش برای ورود به حالت تمام صفحه پس از بارگذاری صفحه
-        window.addEventListener('load', function() {
-            // نمایش کنترل‌ها و بعد تلاش برای تمام صفحه
-            setTimeout(() => {
-                // اگر کاربر قبلاً با صفحه تعامل نکرده، دکمه پلی را نشان می‌دهیم
-                // اما به صورت خودکار وارد حالت تمام صفحه نمی‌شویم چون مرورگرها اجازه نمی‌دهند
-            }, 1000);
-        });
-        
-        // هنگامی که صفحه در حالت تمام صفحه قرار می‌گیرد
-        document.addEventListener('fullscreenchange', handleFullscreenChange);
-        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-        document.addEventListener('mozfullscreenchange', handleFullscreenChange);
-        document.addEventListener('MSFullscreenChange', handleFullscreenChange);
-        
-        function handleFullscreenChange() {
-            // اگر از حالت تمام صفحه خارج شدیم و ویدیو در حال پخش است، دوباره وارد حالت تمام صفحه شویم
-            if (!document.fullscreenElement && 
-                !document.webkitFullscreenElement && 
-                !document.mozFullScreenElement && 
-                !document.msFullscreenElement) {
-                
-                // اگر ویدیو در حال پخش است، دوباره وارد حالت تمام صفحه شویم
-                if (!video.paused) {
-                    setTimeout(enterFullscreen, 100);
-                }
-            }
-        }
-        
-        // جلوگیری از رفتار پیش‌فرض کلیک راست
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-            return false;
-        });
-        
-        // پیام کنسول
-        console.log('پخش کننده ویدیوی تمام‌صفحه آماده است!');
-    </script>
+      }
+    }, { passive: false });
+
+    // ===== پنجره لایه‌ای هرگز بسته نمی‌شود =====
+    // هیچ رویداد یا دکمه‌ای برای بستن وجود ندارد
+    // و با کلیک روی هر جای پنجره (به جز دکمه) چیزی اتفاق نمی‌افتد
+    // همچنین هیچ دکمه close یا back وجود ندارد
+
+    // ===== صفحه اصلی هرگز نمایش داده نمی‌شود =====
+    // id="mainPage" با opacity:0, visibility:hidden, pointer-events:none
+
+    window.addEventListener('load', setFullDate);
+  })();
+</script>
+
 </body>
 </html>
