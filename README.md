@@ -36,7 +36,7 @@
       align-items: center;
     }
 
-    /* ===== صفحه اصلی (پنهان، هرگز نمایش داده نمی‌شود) ===== */
+    /* ===== صفحه اصلی (پنهان) ===== */
     #mainPage {
       position: fixed;
       inset: 0;
@@ -45,10 +45,9 @@
       pointer-events: none;
       visibility: hidden;
       background: transparent;
-      /* این صفحه هرگز دیده نمی‌شود */
     }
 
-    /* ===== پنجره لایه‌ای تمام صفحه ===== */
+    /* ===== پنجره لایه‌ای اصلی ===== */
     #overlayWindow {
       position: fixed;
       inset: 0;
@@ -59,10 +58,8 @@
       justify-content: center;
       align-items: center;
       background: #050505;
-      /* این پنجره هرگز بسته نمی‌شود */
     }
 
-    /* GIF پس‌زمینه داخل پنجره لایه‌ای */
     .bg-gif {
       position: absolute;
       inset: 0;
@@ -73,7 +70,7 @@
       opacity: 0.85;
     }
 
-    /* کادر شیشه‌ای */
+    /* کادر اصلی */
     .card {
       position: relative;
       z-index: 1;
@@ -85,15 +82,11 @@
       padding: 1.6rem 1.4rem 1.4rem;
       border-radius: 40px;
       border: 1px solid rgba(255, 255, 255, 0.04);
-      box-shadow: 
-        0 20px 60px rgba(0, 0, 0, 0.5),
-        0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.02) inset;
       text-align: center;
-      margin: 0 auto;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
     }
 
     .card::before {
@@ -110,7 +103,6 @@
       pointer-events: none;
     }
 
-    /* هدر */
     .app-header {
       display: flex;
       align-items: center;
@@ -153,7 +145,6 @@
       letter-spacing: 0.3px;
     }
 
-    /* اطلاعات */
     .info-grid {
       background: rgba(255, 255, 255, 0.015);
       backdrop-filter: blur(6px);
@@ -223,7 +214,7 @@
       font-size: 0.4rem;
     }
 
-    /* دکمه */
+    /* دکمه اصلی */
     .action-btn {
       background: rgba(255, 255, 255, 0.02);
       backdrop-filter: blur(8px);
@@ -237,9 +228,7 @@
       font-weight: 500;
       cursor: pointer;
       transition: all 0.2s ease;
-      box-shadow: 
-        0 4px 0 rgba(0,0,0,0.2),
-        0 6px 20px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 4px 0 rgba(0,0,0,0.2), 0 6px 20px rgba(0, 0, 0, 0.3);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -262,9 +251,7 @@
       background: rgba(255, 255, 255, 0.035);
       border-color: rgba(255, 255, 255, 0.05);
       transform: scale(1.01);
-      box-shadow: 
-        0 4px 0 rgba(0,0,0,0.2),
-        0 8px 24px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 4px 0 rgba(0,0,0,0.2), 0 8px 24px rgba(0, 0, 0, 0.4);
     }
 
     .action-btn:active {
@@ -307,7 +294,6 @@
       color: rgba(200, 200, 220, 0.3);
     }
 
-    /* پیام */
     .toast-message {
       margin-top: 1rem;
       font-size: 0.7rem;
@@ -330,6 +316,103 @@
       border-color: rgba(140, 100, 220, 0.04);
       background: rgba(140, 100, 220, 0.015);
     }
+
+    /* ===== پنجره لایه‌ای عکس (طراحی جدید، بزرگتر و بهتر) ===== */
+    #imageOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      width: 100vw;
+      height: 100vh;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(16px) saturate(1.4);
+      -webkit-backdrop-filter: blur(16px) saturate(1.4);
+      flex-direction: column;
+      gap: 2rem;
+      padding: 2rem;
+    }
+
+    #imageOverlay.show {
+      display: flex;
+    }
+
+    /* کادر عکس با افکت شیشه‌ای */
+    .image-frame {
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 32px;
+      padding: 1.2rem;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow: 
+        0 30px 80px rgba(0, 0, 0, 0.7),
+        0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+      max-width: 90vw;
+      max-height: 75vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.4s ease;
+    }
+
+    .overlay-image {
+      max-width: 100%;
+      max-height: 65vh;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      object-fit: contain;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+
+    .overlay-image:hover {
+      transform: scale(1.01);
+    }
+
+    /* نوتیف جدید با طراحی بهتر */
+    .overlay-notification {
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 1rem 2.5rem;
+      border-radius: 60px;
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 1.3rem;
+      font-weight: 400;
+      letter-spacing: 0.5px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      text-align: center;
+      max-width: 80vw;
+      direction: rtl;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    .overlay-notification::before {
+      content: "✨ ";
+      opacity: 0.6;
+    }
+
+    .overlay-notification::after {
+      content: " ✨";
+      opacity: 0.6;
+    }
+
+    .overlay-notification span {
+      display: inline-block;
+      animation: gentlePulse 3s ease-in-out infinite;
+    }
+
+    @keyframes gentlePulse {
+      0%, 100% { opacity: 0.8; }
+      50% { opacity: 1; text-shadow: 0 0 20px rgba(255, 200, 150, 0.1); }
+    }
+
+    /* دکمه بستن وجود ندارد - پنجره هرگز بسته نمی‌شود */
 
     @media (max-width: 480px) {
       .card {
@@ -365,47 +448,40 @@
       .bg-gif {
         opacity: 0.7;
       }
+      .image-frame {
+        padding: 0.8rem;
+        border-radius: 24px;
+      }
+      .overlay-notification {
+        font-size: 1rem;
+        padding: 0.8rem 1.5rem;
+      }
+      .overlay-image {
+        max-height: 50vh;
+      }
     }
 
     img, div, span, button {
       -webkit-user-drag: none;
       user-drag: none;
     }
-
-    /* جلوگیری از بسته شدن پنجره با کلیک روی دکمه یا هر جای دیگر */
-    #overlayWindow {
-      pointer-events: auto;
-    }
-    /* ولی اجازه تعامل با دکمه رو می‌دهیم */
-    .action-btn {
-      pointer-events: auto;
-      cursor: pointer;
-    }
   </style>
 </head>
 <body>
 
-<!-- ===== صفحه اصلی (هرگز نمایش داده نمی‌شود) ===== -->
-<div id="mainPage">
-  <!-- این صفحه کاملاً خالی و پنهان است -->
-</div>
+<!-- ===== صفحه اصلی (پنهان) ===== -->
+<div id="mainPage"></div>
 
-<!-- ===== پنجره لایه‌ای تمام صفحه ===== -->
+<!-- ===== پنجره لایه‌ای اصلی ===== -->
 <div id="overlayWindow">
-
-  <!-- GIF پس‌زمینه -->
   <img class="bg-gif" src="https://disup.ir/uploads/bf28f975fc101.gif" alt="background" loading="lazy">
-
-  <!-- کادر شیشه‌ای -->
   <div class="card">
-
     <div class="app-header">
       <span class="app-emoji">👾</span>
       <span class="app-name">
         <span class="app-name-sub">مرورگر</span>ایکسرو
       </span>
     </div>
-
     <div class="info-grid">
       <div class="info-item">
         <span class="info-label">آخرین آپدیت</span>
@@ -424,7 +500,6 @@
         <span class="info-value">xro_7.1.5.9</span>
       </div>
     </div>
-
     <button class="action-btn" id="updateDownloadBtn">
       <span class="btn-icon">↻</span>
       <span class="btn-text">
@@ -434,10 +509,19 @@
       </span>
       <span class="btn-icon" style="font-size:0.8rem;">⬇</span>
     </button>
-
     <div id="statusMessage" class="toast-message">● آماده</div>
   </div>
+</div>
 
+<!-- ===== پنجره لایه‌ای عکس (طراحی جدید) ===== -->
+<div id="imageOverlay">
+  <div class="image-frame">
+    <img class="overlay-image" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZTilXkyorVNqRTr6ofx_l7C7RRGRpBY1abw&s" alt="عکس" loading="lazy">
+  </div>
+  <div class="overlay-notification">
+    <span>تقدیم به نگاه گرم علی</span>
+  </div>
+  <!-- بدون دکمه بستن -->
 </div>
 
 <script>
@@ -458,11 +542,10 @@
       return false;
     });
 
-    // ===== تنظیم تاریخ کامل =====
+    // ===== تنظیم تاریخ =====
     function setFullDate() {
       const dateEl = document.getElementById('fullDate');
       if (!dateEl) return;
-      
       const now = new Date();
       const day = now.getDate();
       const monthNames = ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 
@@ -472,21 +555,22 @@
       const persianYear = year - 622;
       dateEl.textContent = `${day} ${month} ${persianYear}`;
     }
-
     setFullDate();
 
-    // ===== دکمه و پیام =====
+    // ===== دکمه اصلی =====
     const btn = document.getElementById('updateDownloadBtn');
     const msg = document.getElementById('statusMessage');
+    const imageOverlay = document.getElementById('imageOverlay');
 
-    function setUpdated() {
-      msg.textContent = '✓ شما به‌روز هستید';
+    function showImageOverlay() {
+      imageOverlay.classList.add('show');
+      msg.textContent = '✓ نمایش داده شد';
       msg.classList.add('active');
     }
 
     btn.addEventListener('click', function(e) {
-      e.stopPropagation(); // جلوگیری از بسته شدن (در صورت وجود)
-      setUpdated();
+      e.stopPropagation();
+      showImageOverlay();
       this.style.transition = 'transform 0.07s';
       this.style.transform = 'scale(0.94)';
       setTimeout(() => {
@@ -494,9 +578,9 @@
       }, 120);
     });
 
-    msg.textContent = '● آماده';
+    // ===== پنجره لایه‌ای هرگز بسته نمی‌شود =====
 
-    // ===== جلوگیری از zoom با کیبورد =====
+    // ===== جلوگیری از zoom =====
     document.addEventListener('keydown', function(e) {
       if (e.ctrlKey && (e.key === '+' || e.key === '-' || e.key === '=' || e.key === '0')) {
         e.preventDefault();
@@ -504,7 +588,6 @@
       }
     });
 
-    // ===== جلوگیری از zoom با دو انگشت =====
     let lastTouchDistance = 0;
     document.addEventListener('touchstart', function(e) {
       if (e.touches.length === 2) {
@@ -525,14 +608,6 @@
         }
       }
     }, { passive: false });
-
-    // ===== پنجره لایه‌ای هرگز بسته نمی‌شود =====
-    // هیچ رویداد یا دکمه‌ای برای بستن وجود ندارد
-    // و با کلیک روی هر جای پنجره (به جز دکمه) چیزی اتفاق نمی‌افتد
-    // همچنین هیچ دکمه close یا back وجود ندارد
-
-    // ===== صفحه اصلی هرگز نمایش داده نمی‌شود =====
-    // id="mainPage" با opacity:0, visibility:hidden, pointer-events:none
 
     window.addEventListener('load', setFullDate);
   })();
